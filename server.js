@@ -23,21 +23,40 @@ app.post('/api/analyze', async (req, res) => {
     const { image, memo, history } = req.body
 
     if (!image) {
-      return res.status(400).json({ error: '이미지가 필요합니다' })
+      return res.status(400).json({ error: '파일이 필요합니다' })
     }
 
     const userContent = []
 
-    userContent.push({
-      type: 'image',
-      source: {
-        type: 'base64',
-        media_type: image.mediaType || 'image/png',
-        data: image.data
-      }
-    })
+    if (image.type === 'text') {
+      // 텍스트 파일 → 텍스트로 전달
+      userContent.push({
+        type: 'text',
+        text: `[파일: ${image.fileName || '텍스트파일'}]\n\n${image.content}`
+      })
+    } else if (image.type === 'document') {
+      // PDF → document 블록
+      userContent.push({
+        type: 'document',
+        source: {
+          type: 'base64',
+          media_type: image.mediaType || 'application/pdf',
+          data: image.data
+        }
+      })
+    } else {
+      // 이미지
+      userContent.push({
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: image.mediaType || 'image/png',
+          data: image.data
+        }
+      })
+    }
 
-    let textPrompt = '위 대화 캡처를 분석하고, 플레이북에 따라 JSON 형식으로 응답해주세요.'
+    let textPrompt = '위 대화 내용을 분석하고, 플레이북에 따라 JSON 형식으로 응답해주세요.'
     if (memo) {
       textPrompt += `\n\n추가 컨텍스트: ${memo}`
     }
