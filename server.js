@@ -76,23 +76,16 @@ app.post('/api/analyze', async (req, res) => {
 
     let parsed
     try {
-      // ```json ... ``` 블록 안의 JSON을 우선 추출
-      const codeBlockMatch = text.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/)
-      if (codeBlockMatch) {
-        parsed = JSON.parse(codeBlockMatch[1])
-      } else {
-        // 가장 바깥의 balanced braces 매칭
-        const start = text.indexOf('{')
-        if (start !== -1) {
-          let depth = 0
-          let end = start
-          for (let i = start; i < text.length; i++) {
-            if (text[i] === '{') depth++
-            else if (text[i] === '}') depth--
-            if (depth === 0) { end = i; break }
-          }
-          parsed = JSON.parse(text.substring(start, end + 1))
+      const start = text.indexOf('{')
+      if (start !== -1) {
+        let depth = 0
+        let end = start
+        for (let i = start; i < text.length; i++) {
+          if (text[i] === '{') depth++
+          else if (text[i] === '}') depth--
+          if (depth === 0) { end = i; break }
         }
+        parsed = JSON.parse(text.substring(start, end + 1))
       }
     } catch {
       parsed = null
