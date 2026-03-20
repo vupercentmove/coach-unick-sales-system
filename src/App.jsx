@@ -5,7 +5,7 @@ import ConversationHistory from './components/ConversationHistory'
 import { analyzeCapture } from './lib/api'
 import { saveAnalysis, getCustomerAnalyses } from './lib/storage'
 
-const ACCESS_CODE = 'viewpercent2026'
+const ACCESS_CODE = 'vpct!0715'
 
 function LockScreen({ onUnlock }) {
   const [code, setCode] = useState('')
